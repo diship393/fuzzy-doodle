@@ -1,0 +1,10 @@
+#!/bin/bash
+
+host=$(echo $HOSTNAME|tr '[a-z]' '[A-Z]');echo -e "\n|$host|"
+ps=$(ps -e -o pcpu,pid,user,nice,state,cputime,args --sort user|sed '/ 00:00:00 /d'|awk '$1~/^[1-9]/ {print $0" |"}')
+for ((;;)); do
+p=${ps%%|*};echo $p;user=$(echo $p|awk '{print $3}')
+if [ "$user" == "$USER" ] || [ "$USER" == "root" ];then
+pid=$(echo $p|awk '{print $2}');if [ "$pid" != "" ]; then pwdx $pid|sed "s/$pid:/   /";fi;fi
+ps=${ps#*|};if [ "$ps" == "" ];then break;fi
+done
